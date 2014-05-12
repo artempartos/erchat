@@ -1,0 +1,15 @@
+{application, erchat,
+ [
+  {description, ""},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib,
+                  sasl,
+                  sync,
+                  cowboy
+                 ]},
+  {mod, { erchat_app, []}},
+  {env, []}
+ ]}.

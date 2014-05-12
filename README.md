@@ -1,0 +1,6 @@
+Readme :)
+
+make
+
+make run
+
