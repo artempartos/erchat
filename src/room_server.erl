@@ -6,7 +6,7 @@
 %% API Function Exports
 %% ------------------------------------------------------------------
 
--export([start_link/0]).
+-export([start_link/1]).
 
 %% ------------------------------------------------------------------
 %% gen_server Function Exports
@@ -28,7 +28,7 @@ start_link(Args) ->
 
 init([UUID]) ->
   true = gproc:reg({n, l, UUID}, [self()]),
-  {ok, Args}.
+  {ok, UUID}.
 
 handle_call(_Request, _From, State) ->
   {reply, ok, State}.
