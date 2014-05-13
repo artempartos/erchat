@@ -4,7 +4,7 @@
 
 chat_test() ->
   ok = application:start(ranch),
-  % erchat:start(),
+  erchat:start(),
   % code:add_path("../ebin"),
   % code:add_path("../deps/*/ebin"),
 
