@@ -12,7 +12,7 @@
 start(_StartType, _StartArgs) ->
   Dispatch = cowboy_router:compile([
     {'_', [
-      {"/", erchat_handler, []}
+      {"/bullet", bullet_handler, [{handler, erchat_handler}]}
     ]}
   ]),
   {ok, _} = cowboy:start_http(http, 100, [{port, 8080}], [

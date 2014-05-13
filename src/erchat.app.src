@@ -6,9 +6,10 @@
   {applications, [
                   kernel,
                   stdlib,
+                  cowboy,
+                  gproc,
                   sasl,
-                  sync,
-                  cowboy
+                  sync
                  ]},
   {mod, { erchat_app, []}},
   {env, []}
