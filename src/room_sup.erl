@@ -11,3 +11,9 @@ start_link() ->
 init(_Arg) ->
   {ok, {{simple_one_for_one, 5, 10},
   [?CHILD(room_server, worker)]}}.
+
+create_room() ->
+  UUID = uuid:to_string(uuid:uuid1()),
+  {ok, Pid} = supervisor:start_child(?MODULE, [UUID]).
+  gen_server:cast(rooms_server, [uuid, Pid]),
+  {ok, UUID}.
