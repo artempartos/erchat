@@ -6,7 +6,7 @@ cowboy_test_() ->
    fun start/0,
    fun stop/1,
    [
-    fun chat_test/0
+    fun test_chat/0
    ]}.
 
 start() ->
@@ -15,10 +15,9 @@ start() ->
 stop(_) ->
   erchat:stop().
 
-chat_test() ->
+test_chat() ->
   % code:add_path("../ebin"),
   % code:add_path("../deps/*/ebin"),
-
   {ok, UUID} = room_sup:create_room(),
   ?assertEqual(erlang:is_list(UUID), true).
 
