@@ -8,7 +8,11 @@ chat_test() ->
   Pid = rooms_server:get_room_pid(UUID),
 
   ?assert(erlang:is_pid(Pid)),
+  ?assert(erlang:is_list(UUID)),
+  {ok, Pid2} = erchat_manager:start_link(UUID),
+  {ok, ready} = gen_server:call(Pid2, {get, info}),
   ?assert(erlang:is_list(UUID)).
+
 
 % Создать  комнату
 % Подключить первого юзера

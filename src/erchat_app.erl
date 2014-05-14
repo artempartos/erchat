@@ -12,7 +12,7 @@
 start(_StartType, _StartArgs) ->
   Dispatch = cowboy_router:compile([
     {'_', [
-      {"/bullet", bullet_handler, [{handler, erchat_handler}]},
+      {"/rooms/[:uuid]", bullet_handler, [{handler, erchat_handler}]},
       {"/rooms", rooms_handler, []}
     ]}
   ]),
