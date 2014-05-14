@@ -6,6 +6,8 @@ erl_crash.dump
 */.idea/
 /deps/*
 /ebin/*
+/backend/deps/*
+/backend/ebin/*
 /log/*
 /test/log/*
 *.beam

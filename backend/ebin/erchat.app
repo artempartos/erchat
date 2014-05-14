@@ -1,0 +1,9 @@
+{application,erchat,
+             [{description,[]},
+              {vsn,"1"},
+              {registered,[]},
+              {applications,[kernel,stdlib,cowboy,gproc,sasl,sync]},
+              {mod,{erchat_app,[]}},
+              {env,[]},
+              {modules,[chats_gen,erchat,erchat_app,erchat_handler,erchat_sup,
+                        room_server,room_sup,rooms_handler,rooms_server]}]}.
