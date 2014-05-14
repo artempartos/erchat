@@ -17,10 +17,13 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
 
--export([set_nickname/2, send_message/2]).
+-export([set_nickname/2, send_message/2, start_client/1]).
 %% ------------------------------------------------------------------
 %% API Function Definitions
 %% ------------------------------------------------------------------
+
+start_client(UUID) ->
+  start_link(UUID).
 
 start_link(UUID) ->
   gen_server:start_link(?MODULE, [UUID], []).
@@ -68,6 +71,9 @@ send_message(Message, Pid) ->
 
 set_nickname(Nickname, Pid) ->
   gen_server:call(Pid, {nickname, Nickname}).
+
+get_info(Pid) ->
+  gen_server:call(Pid, {get, info}).
 
 %% ------------------------------------------------------------------
 %% Internal Function Definitions
