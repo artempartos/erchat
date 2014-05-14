@@ -25,12 +25,18 @@ test_chat() ->
 
   ?assert(erlang:is_pid(RoomPid)),
   ?assert(erlang:is_list(UUID)),
-  {ok, Pid1} = erchat_manager:start_link(UUID),
-  {ok, Pid2} = erchat_manager:start_link(UUID),
-  {ok, ready} = gen_server:call(Pid1, {get, info}),
-  {ok, ready} = gen_server:call(Pid2, {get, info}),
+
+  {ok, Pid1} = erchat_manager:start_client(UUID),
+  {ok, Pid2} = erchat_manager:start_client(UUID),
+  {ok, Info1} = erchat_manager:get_info(Pid1),
+  {ok, Info2} = erchat_manager:get_info(Pid2),
+
+  ?assertEqual(Info1, ready),
+  ?assertEqual(Info2, ready),
+
   Pids = [Pid || {Pid, _} <- gproc:lookup_local_properties(UUID)],
-  ?assertEqual([Pid1, Pid2], Pids), 
+
+  ?assertEqual([Pid1, Pid2], Pids),
   ok = erchat_manager:set_nickname("Guffi", Pid1),
   ok = erchat_manager:send_message("Yahoo", Pid1).
 
@@ -55,5 +61,5 @@ test_rooms() ->
   ?assert(erlang:is_list(Rooms)),
   ?assertEqual(Rooms, [RoomUUID2, RoomUUID1]).
 
-  
+
 

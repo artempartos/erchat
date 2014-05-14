@@ -17,10 +17,13 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
 
--export([set_nickname/2, send_message/2]).
+-export([set_nickname/2, send_message/2, get_info/1, start_client/1]).
 %% ------------------------------------------------------------------
 %% API Function Definitions
 %% ------------------------------------------------------------------
+
+start_client(UUID) ->
+  start_link(UUID).
 
 start_link(UUID) ->
   gen_server:start_link(?MODULE, [UUID], []).
@@ -31,14 +34,14 @@ start_link(UUID) ->
 
 init([UUID]) ->
   case erchat_handler:init(nil, #http_req{bindings=[{uuid, erlang:list_to_binary(UUID)}]}, [], []) of
-    {ok, Req2, ErchatState = {ready, _, _}} ->
+    {ok, _Req, ErchatState} ->
       {ok, {[ready], ErchatState}};
-    {shutdown, Req2, []} ->
+    {shutdown, _Req, []} ->
       {ok, {[noready], []}}
   end.
 
 handle_call({get, info}, _From, State = {[Status | RestStatuses], ErchatState} ) ->
-  {reply, {ok, Status}, RestStatuses};
+  {reply, {ok, Status}, {RestStatuses, ErchatState}};
 
 handle_call({nickname, Nickname}, _From, {ManagerState, ErchatState}) ->
   {ok, Req, NewErchState} = erchat_handler:stream({nickname, Nickname}, nil, ErchatState),
@@ -68,6 +71,9 @@ send_message(Message, Pid) ->
 
 set_nickname(Nickname, Pid) ->
   gen_server:call(Pid, {nickname, Nickname}).
+
+get_info(Pid) ->
+  gen_server:call(Pid, {get, info}).
 
 %% ------------------------------------------------------------------
 %% Internal Function Definitions

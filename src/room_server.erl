@@ -37,7 +37,7 @@ handle_cast({new_message, Message, Nickname}, State) ->
   %% save to history
   %% broacast message
   {noreply, State};
-handle_cast(_Msg, State) -> 
+handle_cast(_Msg, State) ->
   {noreply, State}.
 
 handle_info(_Info, State) ->

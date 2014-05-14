@@ -63,7 +63,7 @@ get_rooms() ->
 
 new_room(UUID, Pid) ->
   gen_server:cast(rooms_server, {new_room, UUID, Pid}).
-  
+
 %% ------------------------------------------------------------------
 %% Internal Function Definitions
 %% ------------------------------------------------------------------
