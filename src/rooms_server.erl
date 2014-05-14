@@ -8,6 +8,8 @@
 
 -export([start_link/0]).
 
+-export([get_room_pid/1]).
+
 %% ------------------------------------------------------------------
 %% gen_server Function Exports
 %% ------------------------------------------------------------------
@@ -48,7 +50,7 @@ terminate(_Reason, _State) ->
 code_change(_OldVsn, State, _Extra) ->
   {ok, State}.
 
-get_room_actor(UUID) ->
+get_room_pid(UUID) ->
   _PID = gproc:lookup_local_name(UUID).
 
 
