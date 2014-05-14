@@ -18,14 +18,14 @@ init(_Transport, Req, _Opts, _Active) ->
       {reply, History, Req2, {Pid, empty}}
   end.
 
-stream({nickname, Nickname}, Req, {RoomPid, empty}) ->
-  gen_server:cast(RoomPid, {new_user, Nickname}),
-  {ok, Req, {RoomPid, Nickname}};
+stream({nickname, Nick}, Req, {RoomPid, empty}) ->
+  room_server:login_user(RoomPid, Nick),
+  {ok, Req, {RoomPid, Nick}};
 
 stream({message, Message}, Req, State = {RoomPid, empty}) ->
   {ok, Req, State};
-stream({message, Message}, Req, State = {RoomPid, Nickname}) ->
-  gen_server:cast(RoomPid, {new_message, Nickname, Message}),
+stream({message, Message}, Req, State = {RoomPid, Nick}) ->
+  gen_server:cast(RoomPid, {new_message, Nick, Message}),
   {ok, Req, State};
 
 stream(_Data, Req, State) ->

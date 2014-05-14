@@ -40,11 +40,14 @@ init([UUID]) ->
       {ok, {[notconnected], []}}
   end.
 
-handle_call({get, info}, _From, State = {[Status | RestStatuses], ErchatState} ) ->
+handle_call({get, info}, _From, State = {[], _ErchatState} ) ->
+  {reply, {ok, []}, State};
+
+handle_call({get, info}, _From, {[Status | RestStatuses], ErchatState} ) ->
   {reply, {ok, Status}, {RestStatuses, ErchatState}};
 
 handle_call({nickname, Nickname}, _From, {ManagerState, ErchatState}) ->
-  {ok, Req, NewErchState} = erchat_handler:stream({nickname, Nickname}, nil, ErchatState),
+  {ok, _Req, NewErchState} = erchat_handler:stream({nickname, Nickname}, nil, ErchatState),
   {reply, ok, {ManagerState, NewErchState}};
 
 handle_call({message, Message}, _From, {ManagerState, ErchatState}) ->
@@ -58,7 +61,7 @@ handle_cast(_Msg, State) ->
   {noreply, State}.
 
 handle_info(Message, {ManagerState, ErchatState}) ->
-  {reply, Message, Req, NewErchState} = erchat_handler:info(Message, nil, ErchatState),
+  {reply, Message, _Req, NewErchState} = erchat_handler:info(Message, nil, ErchatState),
   {noreply, {[ Message | ManagerState], NewErchState}};
 
 handle_info(_Info, State) ->
@@ -76,7 +79,9 @@ send_message(Message, Pid) ->
   Res.
 
 set_nickname(Nickname, Pid) ->
-  gen_server:call(Pid, {nickname, Nickname}).
+  Res = gen_server:call(Pid, {nickname, Nickname}),
+  timer:sleep(1),
+  Res.
 
 get_info(Pid) ->
   gen_server:call(Pid, {get, info}).

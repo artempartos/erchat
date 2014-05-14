@@ -14,7 +14,8 @@
 
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
--export([get_history/1]).
+
+-export([get_history/1, login_user/2]).
 %% ------------------------------------------------------------------
 %% API Function Definitions
 %% ------------------------------------------------------------------
@@ -34,13 +35,20 @@ init([UUID]) ->
 
 handle_call({get, history}, _From, State) ->
   {_UUID, _Users, History} = State,
-  {reply, History, State};
+  {reply, {history, lists:reverse(History)}, State};
 handle_call(_Request, _From, State) ->
   {reply, ok, State}.
 
-handle_cast({new_message, Nickname, Message}, State) ->
+handle_cast({new_user, Nick}, State) ->
   {UUID, Users, History} = State,
-  NewMessage = {message, Nickname, Message},
+  Message = {login, Nick},
+  broadcast(Message, UUID),
+  NewState = {UUID,[Nick | Users], History},
+  {noreply, NewState};
+
+handle_cast({new_message, Nick, Message}, State) ->
+  {UUID, Users, History} = State,
+  NewMessage = {message, Nick, Message},
   NewHistory = [NewMessage | History],
   NewState = {UUID, Users, NewHistory},
   broadcast(NewMessage, UUID),
@@ -62,7 +70,10 @@ broadcast(Message, UUID) ->
   gproc:send({p,l, UUID}, Message).
 
 get_history(Pid) ->
-  lists:reverse(gen_server:call(Pid, {get, history})).
+  gen_server:call(Pid, {get, history}).
+
+login_user(RoomPid, Nick) ->
+  gen_server:cast(RoomPid, {new_user, Nick}).
 
 %% ------------------------------------------------------------------
 %% Internal Function Definitions

@@ -7,8 +7,12 @@ erchat_test_() ->
   {foreach,
    fun start/0,
    fun stop/1,
-     [fun test_chat/0,
-      fun test_rooms/0]}.
+     [fun test_history/0,
+      fun test_send_message/0,
+      fun test_send_message_without_nick/0,
+      fun test_client_connected_and_login/0,
+      fun test_save_room/0,
+      fun test_get_rooms/0]}.
 
 start() ->
   erchat:start(),
@@ -18,59 +22,73 @@ stop(_) ->
   application:stop(erchat_app),
   erchat:stop().
 
+test_client_connected_and_login() ->
+  {ok, UUID} = erchat:create_room(),
+  {ok, Client} = erchat_manager:start_client(UUID),
 
-test_chat() ->
+  {ok, Info} = erchat_manager:get_info(Client),
+  ?assertEqual(Info, connected),
+
+  Nick = "Guffi",
+  ok = erchat_manager:set_nickname(Nick, Client),
+  {ok, Login} = erchat_manager:get_info(Client),
+  ?assertEqual({login, Nick}, Login).
+
+test_send_message() ->
+  {ok, UUID} = erchat:create_room(),
+  {ok, Client} = erchat_manager:start_client(UUID),
+  {ok, connected} = erchat_manager:get_info(Client),
+  {ok, {history, []}} = erchat_manager:get_info(Client),
+
+  Nick = "Guffi",
+  Message = "Yep!",
+  ok = erchat_manager:set_nickname(Nick, Client),
+  {ok, {login, Nick}} = erchat_manager:get_info(Client),
+
+  ok = erchat_manager:send_message(Message, Client),
+  {ok, Result} = erchat_manager:get_info(Client),
+  ?assertEqual({message, Nick, Message}, Result).
+
+
+test_send_message_without_nick() ->
+  {ok, UUID} = erchat:create_room(),
+  {ok, Client} = erchat_manager:start_client(UUID),
+  {ok, connected} = erchat_manager:get_info(Client),
+  {ok, {history, []}} = erchat_manager:get_info(Client),
+  Message = "Yep!",
+  ok = erchat_manager:send_message(Message, Client),
+  {ok, Result} = erchat_manager:get_info(Client),
+  ?assertEqual([], Result).
+
+test_save_room() ->
   {ok, UUID} = erchat:create_room(),
   RoomPid = rooms_server:get_room_pid(UUID),
-
   ?assert(erlang:is_pid(RoomPid)),
-  ?assert(erlang:is_list(UUID)),
-
-  {ok, Pid1} = erchat_manager:start_client(UUID),
-  {ok, Info1} = erchat_manager:get_info(Pid1),
-  ?assertEqual(Info1, connected),
-  
-  Message = "Yahoo",
-  Nick = "Guffi",
-  ok = erchat_manager:set_nickname(Nick, Pid1),
-  ok = erchat_manager:send_message(Message, Pid1),
-  {ok, Message1} = erchat_manager:get_info(Pid1),
-  ?assertEqual({message, Nick, Message}, Message1),
-
-  {ok, Pid2} = erchat_manager:start_client(UUID),
-  {ok, Info2} = erchat_manager:get_info(Pid2),
-  ?assertEqual(Info2, connected),
-  {ok, History} = erchat_manager:get_info(Pid2),
-  ?assertEqual([{message, Nick, Message}], History),
-  
-  Pids = [Pid || {Pid, _} <- gproc:lookup_local_properties(UUID)],
-  ?assertEqual([Pid1, Pid2], Pids),
-
-  ok = erchat_manager:send_message("Not sended", Pid2),
-  {ok, []} = erchat_manager:get_info(Pid1),
-  ok = erchat_manager:set_nickname("Nick2", Pid2),
-  ok = erchat_manager:send_message("Hallo!", Pid2),
-  {ok, Message2} = erchat_manager:get_info(Pid1),
-
-  {ok, Pid3} = erchat_manager:start_client(UUID),
-  {ok, Info3} = erchat_manager:get_info(Pid3),
-  {ok, History2} = erchat_manager:get_info(Pid3),
-  ?assertEqual([Message1, Message2], History2).
+  ?assert(erlang:is_list(UUID)).
 
 
+test_history() ->
+  {ok, UUID} = erchat:create_room(),
+  {ok, Client1} = erchat_manager:start_client(UUID),
+  {ok, Client2} = erchat_manager:start_client(UUID),
+  Message = "Yep!",
+  Nick1 = "Nick1",
+  Nick2 = "Nick2",
 
-% Создать  комнату
-% Подключить первого юзера
+  ok = erchat_manager:set_nickname(Nick1, Client1),
+  ok = erchat_manager:set_nickname(Nick2, Client2),
 
-% Послать сообщение первым юзером
+  ok = erchat_manager:send_message(Message, Client1),
+  ok = erchat_manager:send_message(Message, Client2),
 
-% Подключить второго юзера
-% Проверить загрузку истории у второго юзера
+  {ok, LastClient} = erchat_manager:start_client(UUID),
+  {ok, connected} = erchat_manager:get_info(LastClient),
 
-% Послать сообщение первым юзером
-% Проверить что второй юзер получил сообщение
+  {ok, {history, History}} = erchat_manager:get_info(LastClient),
+  ?assertEqual([{message, Nick1, Message}, {message, Nick2, Message}], History).
 
-test_rooms() ->
+
+test_get_rooms() ->
   {ok, RoomUUID1} = erchat:create_room(),
   {ok, RoomUUID2} = erchat:create_room(),
 
