@@ -37,8 +37,17 @@ test_chat() ->
   Pids = [Pid || {Pid, _} <- gproc:lookup_local_properties(UUID)],
 
   ?assertEqual([Pid1, Pid2], Pids),
-  ok = erchat_manager:set_nickname("Guffi", Pid1),
-  ok = erchat_manager:send_message("Yahoo", Pid1).
+
+  Message = "Yahoo",
+  Nick = "Guffi",
+
+  ok = erchat_manager:set_nickname(Nick, Pid1),
+  ok = erchat_manager:send_message(Message, Pid1),
+
+  timer:sleep(1),
+
+  {ok, ExpectedMessage} = erchat_manager:get_info(Pid1),
+  ?assertEqual({message, Nick, Message}, ExpectedMessage).
 
 
 % Создать  комнату

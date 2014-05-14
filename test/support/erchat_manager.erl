@@ -57,6 +57,11 @@ handle_call(_Request, _From, State) ->
 handle_cast(_Msg, State) ->
   {noreply, State}.
 
+handle_info(Message, {ManagerState, ErchatState}) ->
+  erlang:display(Message),
+  {reply, Message, Req, NewErchState} = erchat_handler:info(Message, nil, ErchatState),
+  {noreply, {[ Message | ManagerState], NewErchState}};
+
 handle_info(_Info, State) ->
   {noreply, State}.
 

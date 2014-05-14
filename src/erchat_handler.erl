@@ -29,8 +29,8 @@ stream({message, Message}, Req, State = {RoomPid, Nickname}) ->
 stream(_Data, Req, State) ->
   {ok, Req, State}.
 
-info(_Info, Req, State) ->
-  {ok, Req, State}.
+info(Info, Req, State) ->
+  {reply, Info, Req, State}.
 
 terminate(_Req, _TRef) ->
   ok.
