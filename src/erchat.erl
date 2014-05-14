@@ -12,5 +12,5 @@ stop() ->
 create_room() ->
   UUID = uuid:to_string(uuid:uuid1()),
   {ok, Pid} = supervisor:start_child(room_sup, [UUID]),
-  gen_server:cast(rooms_server, {new_room, UUID, Pid}),
+  rooms_server:new_room(UUID, Pid),
   {ok, UUID}.

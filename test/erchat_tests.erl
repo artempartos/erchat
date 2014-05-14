@@ -21,13 +21,18 @@ stop(_) ->
 
 test_chat() ->
   {ok, UUID} = erchat:create_room(),
-  Pid = rooms_server:get_room_pid(UUID),
+  RoomPid = rooms_server:get_room_pid(UUID),
 
-  ?assert(erlang:is_pid(Pid)),
+  ?assert(erlang:is_pid(RoomPid)),
   ?assert(erlang:is_list(UUID)),
+  {ok, Pid1} = erchat_manager:start_link(UUID),
   {ok, Pid2} = erchat_manager:start_link(UUID),
+  {ok, ready} = gen_server:call(Pid1, {get, info}),
   {ok, ready} = gen_server:call(Pid2, {get, info}),
-  ?assert(erlang:is_list(UUID)).
+  Pids = [Pid || {Pid, _} <- gproc:lookup_local_properties(UUID)],
+  ?assertEqual([Pid1, Pid2], Pids), 
+  ok = erchat_manager:set_nickname("Guffi", Pid1),
+  ok = erchat_manager:send_message("Yahoo", Pid1).
 
 
 % Создать  комнату
@@ -49,4 +54,6 @@ test_rooms() ->
 
   ?assert(erlang:is_list(Rooms)),
   ?assertEqual(Rooms, [RoomUUID2, RoomUUID1]).
+
+  
 
