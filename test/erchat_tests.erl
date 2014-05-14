@@ -1,25 +1,14 @@
--module(cowboy_tests).
+-module(erchat_tests).
 -include_lib("eunit/include/eunit.hrl").
 
-cowboy_test_() ->
-  {foreach,
-   fun start/0,
-   fun stop/1,
-   [
-    fun test_chat/0
-   ]}.
+chat_test() ->
+  erchat:start(),
+  application:start(erchat_app),
+  {ok, UUID} = erchat:create_room(),
+  Pid = rooms_server:get_room_pid(UUID),
 
-start() ->
-  erchat:start().
-
-stop(_) ->
-  erchat:stop().
-
-test_chat() ->
-  % code:add_path("../ebin"),
-  % code:add_path("../deps/*/ebin"),
-  {ok, UUID} = room_sup:create_room(),
-  ?assertEqual(erlang:is_list(UUID), true).
+  ?assert(erlang:is_pid(Pid)),
+  ?assert(erlang:is_list(UUID)).
 
 % Создать  комнату
 % Подключить первого юзера
