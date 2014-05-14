@@ -5,31 +5,34 @@
 -export([info/3]).
 -export([terminate/2]).
 
--define(PERIOD, 1000).
 
 init(_Transport, Req, _Opts, _Active) ->
-  io:format("bullet init~n"),
-  io:format(_Transport, Req, _Opts, _Active),
-  TRef = erlang:send_after(?PERIOD, self(), refresh),
-  {ok, Req, TRef}.
+  {BitUUID, Req2} = cowboy_req:binding(uuid, Req),
+  UUID = erlang:binary_to_list(BitUUID),
+  case rooms_server:get_room_pid(UUID) of
+    undefined ->
+      {shutdown, Req2, []};
+    Pid ->
+      gproc:reg({p, l, UUID}),
+      History = room_server:get_history(Pid),
+      {reply, History, Req2, {Pid, empty}}
+  end.
 
-stream(<<"ping: ", Name/binary>>, Req, State) ->
-  io:format("ping ~p received~n", [Name]),
-  {reply, <<"pong">>, Req, State};
-stream(Data, Req, State) ->
-  io:format("stream received ~s~n", [Data]),
+stream({nickname, Nick}, Req, {RoomPid, empty}) ->
+  room_server:login_user(RoomPid, Nick),
+  {ok, Req, {RoomPid, Nick}};
+
+stream({message, Message}, Req, State = {RoomPid, empty}) ->
+  {ok, Req, State};
+stream({message, Message}, Req, State = {RoomPid, Nick}) ->
+  gen_server:cast(RoomPid, {new_message, Nick, Message}),
+  {ok, Req, State};
+
+stream(_Data, Req, State) ->
   {ok, Req, State}.
 
-info(refresh, Req, _) ->
-  TRef = erlang:send_after(?PERIOD, self(), refresh),
-  DateTime = cowboy_clock:rfc1123(),
-  io:format("clock refresh timeout: ~s~n", [DateTime]),
-  {reply, DateTime, Req, TRef};
 info(Info, Req, State) ->
-  io:format("info received ~p~n", [Info]),
-  {ok, Req, State}.
+  {reply, Info, Req, State}.
 
-terminate(_Req, TRef) ->
-  io:format("bullet terminate~n"),
-  erlang:cancel_timer(TRef),
+terminate(_Req, _TRef) ->
   ok.
