@@ -12,12 +12,12 @@ init(_Transport, Req, _Opts, _Active) ->
   case rooms_server:get_room_pid(UUID) of
     undefined ->
       {shutdown, Req2, []};
-    Pid ->
+    _ ->
       {ok, Req2, {ready, []}}
   end.
-  
 
-stream(Data, Req, State) ->
+
+stream(_Data, Req, State) ->
   {ok, Req, State}.
 
 info(Info, Req, State) ->

@@ -1,9 +1,25 @@
 -module(erchat_tests).
 -include_lib("eunit/include/eunit.hrl").
 
-chat_test() ->
+-compile(export_all).
+
+erchat_test_() ->
+  {foreach,
+   fun start/0,
+   fun stop/1,
+     [fun test_chat/0,
+      fun test_rooms/0]}.
+
+start() ->
   erchat:start(),
-  application:start(erchat_app),
+  application:start(erchat_app).
+
+stop(_) ->
+  application:stop(erchat_app),
+  erchat:stop().
+
+
+test_chat() ->
   {ok, UUID} = erchat:create_room(),
   Pid = rooms_server:get_room_pid(UUID),
 
@@ -24,3 +40,13 @@ chat_test() ->
 
 % Послать сообщение первым юзером
 % Проверить что второй юзер получил сообщение
+
+test_rooms() ->
+  {ok, RoomUUID1} = erchat:create_room(),
+  {ok, RoomUUID2} = erchat:create_room(),
+
+  Rooms = rooms_server:get_rooms(),
+
+  ?assert(erlang:is_list(Rooms)),
+  ?assertEqual(Rooms, [RoomUUID2, RoomUUID1]).
+

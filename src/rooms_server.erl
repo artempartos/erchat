@@ -8,7 +8,7 @@
 
 -export([start_link/0]).
 
--export([get_room_pid/1]).
+-export([get_room_pid/1, get_rooms/0]).
 
 %% ------------------------------------------------------------------
 %% gen_server Function Exports
@@ -31,6 +31,8 @@ start_link() ->
 init(Args) ->
   {ok, Args}.
 
+handle_call({get, rooms}, _From, Rooms) ->
+  {reply, Rooms, Rooms};
 handle_call(_Request, _From, State) ->
   {reply, ok, State}.
 
@@ -53,7 +55,8 @@ code_change(_OldVsn, State, _Extra) ->
 get_room_pid(UUID) ->
   _PID = gproc:lookup_local_name(UUID).
 
-
+get_rooms() ->
+  gen_server:call(?MODULE, {get, rooms}).
 %% ------------------------------------------------------------------
 %% Internal Function Definitions
 %% ------------------------------------------------------------------
