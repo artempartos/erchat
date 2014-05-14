@@ -14,7 +14,7 @@
 
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
-
+-export([get_history/1]).
 %% ------------------------------------------------------------------
 %% API Function Definitions
 %% ------------------------------------------------------------------
@@ -32,14 +32,18 @@ init([UUID]) ->
   History = [],
   {ok, {UUID, Users, History}}.
 
+handle_call({get, history}, _From, State) ->
+  {_UUID, _Users, History} = State,
+  {reply, History, State};
 handle_call(_Request, _From, State) ->
   {reply, ok, State}.
 
 handle_cast({new_message, Nickname, Message}, State) ->
   {UUID, Users, History} = State,
-  NewHistory = [{Nickname, Message} | History],
+  NewMessage = {message, Nickname, Message},
+  NewHistory = [NewMessage | History],
   NewState = {UUID, Users, NewHistory},
-  broadcast({message, Nickname, Message}, UUID),
+  broadcast(NewMessage, UUID),
   {noreply, NewState};
 
 handle_cast(_Msg, State) ->
@@ -56,6 +60,9 @@ code_change(_OldVsn, State, _Extra) ->
 
 broadcast(Message, UUID) ->
   gproc:send({p,l, UUID}, Message).
+
+get_history(Pid) ->
+  lists:reverse(gen_server:call(Pid, {get, history})).
 
 %% ------------------------------------------------------------------
 %% Internal Function Definitions

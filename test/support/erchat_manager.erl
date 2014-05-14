@@ -34,10 +34,10 @@ start_link(UUID) ->
 
 init([UUID]) ->
   case erchat_handler:init(nil, #http_req{bindings=[{uuid, erlang:list_to_binary(UUID)}]}, [], []) of
-    {ok, _Req, ErchatState} ->
-      {ok, {[ready], ErchatState}};
+    {reply, History, _Req, ErchatState} ->
+      {ok, {[connected, History], ErchatState}};
     {shutdown, _Req, []} ->
-      {ok, {[noready], []}}
+      {ok, {[notconnected], []}}
   end.
 
 handle_call({get, info}, _From, State = {[Status | RestStatuses], ErchatState} ) ->
@@ -58,7 +58,6 @@ handle_cast(_Msg, State) ->
   {noreply, State}.
 
 handle_info(Message, {ManagerState, ErchatState}) ->
-  erlang:display(Message),
   {reply, Message, Req, NewErchState} = erchat_handler:info(Message, nil, ErchatState),
   {noreply, {[ Message | ManagerState], NewErchState}};
 
@@ -72,7 +71,9 @@ code_change(_OldVsn, State, _Extra) ->
   {ok, State}.
 
 send_message(Message, Pid) ->
-  gen_server:call(Pid, {message, Message}).
+  Res = gen_server:call(Pid, {message, Message}),
+  timer:sleep(1),
+  Res.
 
 set_nickname(Nickname, Pid) ->
   gen_server:call(Pid, {nickname, Nickname}).
