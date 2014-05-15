@@ -12,6 +12,7 @@ erchat_test_() ->
       fun test_send_message_without_nick/0,
       fun test_client_connected_and_login/0,
       fun test_save_room/0,
+      fun test_users/0,
       fun test_get_rooms/0]}.
 
 start() ->
@@ -96,6 +97,21 @@ test_get_rooms() ->
 
   ?assert(erlang:is_list(Rooms)),
   ?assertEqual(Rooms, [RoomUUID2, RoomUUID1]).
+
+test_users() ->
+  {ok, UUID} = erchat:create_room(),
+  {ok, Client1} = erchat_manager:start_client(UUID),
+  {ok, Client2} = erchat_manager:start_client(UUID),
+  Nick1 = "Nick1",
+  Nick2 = "Nick2",
+
+  ok = erchat_manager:set_nickname(Nick1, Client1),
+  ok = erchat_manager:set_nickname(Nick2, Client2),
+
+  RoomPid = rooms_server:get_room_pid(UUID),
+  {users, Users} = room_server:get_users(RoomPid),
+  erlang:display(Users),
+  ?assertEqual(2, length(Users)).
 
 
 

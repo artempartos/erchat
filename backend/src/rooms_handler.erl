@@ -13,11 +13,20 @@ handle(Req, State) ->
 
 
 terminate(_Reason, _Req, _State) ->
-  erlang:display(1111),
   ok.
 
 reply(Req) ->
-  	cowboy_req:reply(200, [
-                           {<<"Access-Control-Allow-Origin">>, <<"*">>},
-                           {<<"content-type">>, <<"text/plain; charset=utf-8">>}
-                          ], <<"hallo!!11">>, Req).
+  Rooms = rooms_server:get_rooms(),
+  Response = create_response(Rooms),
+	cowboy_req:reply(200, [
+                         {<<"Access-Control-Allow-Origin">>, <<"*">>},
+                         {<<"content-type">>, <<"application/json; charset=utf-8">>}
+                        ], Response, Req).
+
+create_response(Rooms) ->
+  Mas = lists:map(fun(Room) ->
+    RoomPid = rooms_server:get_room_pid(Room),
+    Count = room_server:get_users_count(RoomPid),
+    [{uuid, erlang:list_to_binary(Room)},{count, Count}]
+  end, Rooms),
+  jsx:encode(Mas).

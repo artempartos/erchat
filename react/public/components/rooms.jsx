@@ -5,23 +5,17 @@ $(document).ready(function() {
     var Rooms = React.createClass({
 
         getInitialState: function() {
-
-            console.log("Start ajax");
+            var rooms = [];
             $.ajax({
                 type: 'GET',
                 data: "json",
                 url: "http://localhost:8080/rooms",
-                // headers: {'X-CSRFToken': $.cookie('csrftoken')},
+                async: false,
                 success: function(data) {
-                    console.log(data);
-                    // var links = this.state.data;
-                    //I do this so the new added link will be on top of the array
-                    // var newLinks = [data].concat(links);
-                    // this.setState({data: newLinks});
+                    rooms = data;
                 }
-                // }.bind(this)
             });
-            return {rooms: []};
+            return {rooms: rooms};
         },
 
         // onChange: function(e) {
@@ -60,14 +54,14 @@ $(document).ready(function() {
         render: function() {
             return (
                 <div>
+                    <input id="create" class="btn btn-primary" type="button" value="Create Room"/>
                     <h1> Rooms</h1>
-                    <a href = "http://partos.me"> Partos.me </a>
-                    // <TodoList
-                    //     items={this.state.items}
-                    //     changeItemStatus={this.changeItemStatus}
-                    //     onItemRemove={this.handleItemRemove}
-                    //     handleItemEditText={this.handleItemEditText}
-                    // />
+                    <RoomsList
+                        rooms={this.state.rooms}
+                        // changeItemStatus={this.changeItemStatus}
+                        // onItemRemove={this.handleItemRemove}
+                        // handleItemEditText={this.handleItemEditText}
+                    />
 
                 </div>
                 );

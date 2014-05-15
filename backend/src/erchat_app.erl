@@ -19,7 +19,6 @@ start(_StartType, _StartArgs) ->
   {ok, _} = cowboy:start_http(http, 100, [{port, 8080}], [
     {env, [{dispatch, Dispatch}]}
   ]),
-  erlang:display("ok"),
   erchat_sup:start_link().
 
 stop(_State) ->
