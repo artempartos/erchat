@@ -31,7 +31,6 @@ $(document).ready(function() {
             url: "http://localhost:8080/rooms",
             success: function(data) {
               room = data;
-              console.log(room);
               document.location = "/rooms/" + room.uuid;
             }
           });
@@ -68,9 +67,6 @@ $(document).ready(function() {
                     <h1> Rooms</h1>
                     <RoomsList
                         rooms={this.state.rooms}
-                        // changeItemStatus={this.changeItemStatus}
-                        // onItemRemove={this.handleItemRemove}
-                        // handleItemEditText={this.handleItemEditText}
                     />
 
                 </div>

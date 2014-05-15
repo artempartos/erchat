@@ -35,4 +35,6 @@ $(document).ready(function(){
   };
 
   start('best', {});
+
+  $('#nicknameModal').modal();
   });

@@ -9,8 +9,11 @@
     %script{src: "//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"}
     %script{src: "//cdnjs.cloudflare.com/ajax/libs/keymaster/1.6.1/keymaster.js"}
 
-    %script{src: 'js/lib/bullet.js'}
+    %script{src: '/js/lib/bullet.js'}
+    %script{src: '/js/lib/react.js'}
+    %script{src: '/js/lib/JSXTransformer.js'}
 
+    %script{type: "text/jsx", src: '/components/chatbox.jsx'}
   .jumbotron
     %h1 My simple chat
 
@@ -34,3 +37,4 @@
             %input.form-control#field{type: "text"}
             %span.input-group-btn
               %input.btn.btn-primary#send{type:'button', value: 'send'}
+    #chat
