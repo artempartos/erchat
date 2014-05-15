@@ -8,16 +8,24 @@ init(_Transport, Req, []) ->
   {ok, Req, undefined}.
 
 handle(Req, State) ->
-  {ok, Req2} = reply(Req),
-  {ok, Req2, State}.
+  {Method, Req2} = cowboy_req:method(Req),
+  handle(Method, Req, State).
 
+handle(<<"GET">>, Req, State) ->
+  Rooms = rooms_server:get_rooms(),
+  Response = create_response(Rooms),
+  {ok, Req2} = reply(Req, Response),
+  {ok, Req2, State};
+handle(<<"POST">>, Req, State) ->
+  {ok, UUID} = erchat:create_room(),
+  Response = jsx:encode([{uuid, erlang:list_to_binary(UUID)}]),
+  {ok, Req2} = reply(Req, Response),
+  {ok, Req2, State}.
 
 terminate(_Reason, _Req, _State) ->
   ok.
 
-reply(Req) ->
-  Rooms = rooms_server:get_rooms(),
-  Response = create_response(Rooms),
+reply(Req, Response) ->
 	cowboy_req:reply(200, [
                          {<<"Access-Control-Allow-Origin">>, <<"*">>},
                          {<<"content-type">>, <<"application/json; charset=utf-8">>}

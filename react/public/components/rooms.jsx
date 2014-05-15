@@ -22,11 +22,21 @@ $(document).ready(function() {
         //     this.setState({text: e.target.value});
         // },
 
-        // handleSubmit: function(e) {
-        //     e.preventDefault();
-        //     var items =  this.state.items.concat([{text: this.state.text, id: this.state.id, status: "uncompleted"}]);
-        //     this.setState({items: items, text: "", id: this.state.id + 1})
-        // },
+        handleClick: function(e) {
+          e.preventDefault();
+          var room = {};
+          $.ajax({
+            type: 'POST',
+            data: "json",
+            url: "http://localhost:8080/rooms",
+            success: function(data) {
+              room = data;
+              console.log(room);
+              document.location = "/rooms/" + room.uuid;
+            }
+          });
+          return false;
+        },
 
         // changeItemStatus: function(item, status) {
         //     items = this.state.items;
@@ -54,7 +64,7 @@ $(document).ready(function() {
         render: function() {
             return (
                 <div>
-                    <input id="create" class="btn btn-primary" type="button" value="Create Room"/>
+                    <input id="create" class="btn btn-primary" type="button" onClick={this.handleClick} value="Create Room"/>
                     <h1> Rooms</h1>
                     <RoomsList
                         rooms={this.state.rooms}
