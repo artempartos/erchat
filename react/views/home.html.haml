@@ -1,0 +1,29 @@
+!!!
+%html
+  %head
+    %title= "Real time web chat"
+    %link{rel: "stylesheet", type: "text/css", href: "/css/style.css"}
+    %link{rel: "stylesheet", type: "text/css", href: "//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"}
+
+    %script{src: 'http://code.jquery.com/jquery-latest.min.js'}
+    %script{src: "//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"}
+
+    %script{src: 'js/lib/react.js'}
+    %script{src: 'js/lib/JSXTransformer.js'}
+    %script{src: 'js/lib/bullet.js'}
+
+    / %script{src: 'js/home.js'}
+    %script{type: "text/jsx", src: 'components/rooms.jsx'}
+
+  .jumbotron
+    %h1 My simple chat
+    .form-horizontal
+
+  %body
+    .row
+      .col-md-1
+      .well.col-md-10
+        / %input.btn.btn-primary#create{type:'button', value: 'Create Room'}
+        / %h1 Rooms:
+
+        #rooms

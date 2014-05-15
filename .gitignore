@@ -8,6 +8,7 @@ erl_crash.dump
 /ebin/*
 /backend/deps/*
 /backend/ebin/*
+/react/node_modules/*
 /log/*
 /test/log/*
 *.beam

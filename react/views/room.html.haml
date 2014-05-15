@@ -1,0 +1,36 @@
+!!!
+%html
+  %head
+    %title= "Real time web chat"
+    %link{rel: "stylesheet", type: "text/css", href: "/css/style.css"}
+    %link{rel: "stylesheet", type: "text/css", href: "//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css"}
+
+    %script{src: 'http://code.jquery.com/jquery-latest.min.js'}
+    %script{src: "//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"}
+    %script{src: "//cdnjs.cloudflare.com/ajax/libs/keymaster/1.6.1/keymaster.js"}
+
+    %script{src: 'js/lib/bullet.js'}
+
+  .jumbotron
+    %h1 My simple chat
+
+  %body
+    .row
+      .col-md-1
+      .col-md-10
+        .label.label-warning#room_name
+    .row
+      .col-md-1
+      .col-md-10
+        .well
+          #content
+    .row
+      .form-horizontal
+        %input.form-control#client_id{type: "hidden"}
+        %input.form-control#color_id{type: "hidden"}
+        .col-md-1
+        .col-md-10
+          .input-group
+            %input.form-control#field{type: "text"}
+            %span.input-group-btn
+              %input.btn.btn-primary#send{type:'button', value: 'send'}
