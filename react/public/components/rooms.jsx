@@ -9,6 +9,7 @@ $(document).ready(function() {
             console.log("Start ajax");
             $.ajax({
                 type: 'GET',
+                data: "json",
                 url: "http://localhost:8080/rooms",
                 // headers: {'X-CSRFToken': $.cookie('csrftoken')},
                 success: function(data) {

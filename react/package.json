@@ -6,9 +6,10 @@
     "start": "node app"
   },
   "dependencies": {
-    "express": "~3.3.4",
     "consolidate": "latest",
-    "hamljs": "latest"
+    "express": "~3.3.4",
+    "hamljs": "latest",
+    "http-proxy": "^1.1.4"
   },
   "devDependencies": {
     "grunt": "~0.4.1",
