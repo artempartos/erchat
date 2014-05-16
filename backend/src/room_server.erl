@@ -57,10 +57,11 @@ handle_cast({new_user, Nick}, State) ->
 
 handle_cast({new_message, Nick, Message}, State) ->
   {UUID, Users, History} = State,
-  NewMessage = {message, Nick, Message},
+  NewMessage = [{nick, Nick}, {content, Message}],
+  ResponseMessage = {message, NewMessage},
   NewHistory = [NewMessage | History],
   NewState = {UUID, Users, NewHistory},
-  broadcast(NewMessage, UUID),
+  broadcast(ResponseMessage, UUID),
   {noreply, NewState};
 
 handle_cast(_Msg, State) ->

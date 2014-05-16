@@ -32,30 +32,31 @@ test_client_connected_and_login() ->
 
   Nick = "Guffi",
   ok = erchat_manager:set_nickname(Nick, Client),
+  ExpectedLogin = encode_message({login, Nick}),
   {ok, Login} = erchat_manager:get_info(Client),
-  ?assertEqual({login, Nick}, Login).
+  ?assertEqual(ExpectedLogin, Login).
 
 test_send_message() ->
   {ok, UUID} = erchat:create_room(),
   {ok, Client} = erchat_manager:start_client(UUID),
   {ok, connected} = erchat_manager:get_info(Client),
-  {ok, {history, []}} = erchat_manager:get_info(Client),
 
   Nick = "Guffi",
   Message = "Yep!",
   ok = erchat_manager:set_nickname(Nick, Client),
-  {ok, {login, Nick}} = erchat_manager:get_info(Client),
+  ExpectedInfo = encode_message({login, Nick}),
+  {ok, ExpectedInfo} = erchat_manager:get_info(Client),
 
   ok = erchat_manager:send_message(Message, Client),
+  ExpectedMessage = encode_message({message, [{nick, Nick},{content, Message}]}),
   {ok, Result} = erchat_manager:get_info(Client),
-  ?assertEqual({message, Nick, Message}, Result).
+  ?assertEqual(ExpectedMessage, Result).
 
 
 test_send_message_without_nick() ->
   {ok, UUID} = erchat:create_room(),
   {ok, Client} = erchat_manager:start_client(UUID),
   {ok, connected} = erchat_manager:get_info(Client),
-  {ok, {history, []}} = erchat_manager:get_info(Client),
   Message = "Yep!",
   ok = erchat_manager:send_message(Message, Client),
   {ok, Result} = erchat_manager:get_info(Client),
@@ -85,8 +86,8 @@ test_history() ->
   {ok, LastClient} = erchat_manager:start_client(UUID),
   {ok, connected} = erchat_manager:get_info(LastClient),
 
-  {ok, {history, History}} = erchat_manager:get_info(LastClient),
-  ?assertEqual([{message, Nick1, Message}, {message, Nick2, Message}], History).
+  {history, History} = erchat_manager:get_history(LastClient),
+  ?assertEqual([[{nick, Nick1}, {content, Message}], [{nick, Nick2}, {content, Message}]], History).
 
 
 test_get_rooms() ->
@@ -113,5 +114,6 @@ test_users() ->
   erlang:display(Users),
   ?assertEqual(2, length(Users)).
 
-
-
+encode_message({Event, Data}) ->
+  jsx:encode([{event, Event}, {data, Data}]).
+  

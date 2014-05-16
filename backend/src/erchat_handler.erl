@@ -5,6 +5,7 @@
 -export([info/3]).
 -export([terminate/2]).
 
+-export([event/3]).
 
 init(_Transport, Req, _Opts, _Active) ->
   {BitUUID, Req2} = cowboy_req:binding(uuid, Req),
@@ -38,7 +39,6 @@ event({get, <<"users">>}, Req, {RoomPid, Nick}) ->
   {reply, Users, Req, {RoomPid, Nick}};
   
 event({nickname, Nick}, Req, {RoomPid, empty}) ->
-  erlang:display(Nick),
   room_server:login_user(RoomPid, Nick),
   {reply, {you_logged, Nick}, Req, {RoomPid, Nick}};
 
