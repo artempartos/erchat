@@ -110,9 +110,8 @@ test_users() ->
 
   RoomPid = rooms_server:get_room_pid(UUID),
   {users, Users} = room_server:get_users(RoomPid),
-  erlang:display(Users),
   ?assertEqual(2, length(Users)).
 
 encode_message({Event, Data}) ->
   jsx:encode([{event, Event}, {data, Data}]).
-  
+
