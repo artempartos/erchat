@@ -9,7 +9,6 @@ $(document).ready(function() {
     componentDidMount: function() {
       var bullet = new BulletWrapper('ws://localhost:8080/rooms/' + this.state.uuid, {});
       bullet.on('open', function() {
-        console.log("open");
         bullet.send('get', 'history');
         bullet.send('get', 'users');
       });
@@ -29,7 +28,7 @@ $(document).ready(function() {
         users = users.filter(function(user) { return user !== nick });
         this.setState({users: users, history: history})
       }.bind(this));
-      
+
       bullet.on('login', function(nick) {
         var users = this.state.users;
         var history = this.state.history;
@@ -37,13 +36,13 @@ $(document).ready(function() {
         users.push(nick);
         this.setState({users: users, history: history})
       }.bind(this));
-      
+
       bullet.on('message', function(message) {
         var history = this.state.history;
         history.push({nick: message.nick, content: message.content});
         this.setState({history: history})
       }.bind(this));
-      
+
       bullet.on('you_logged', function(nick) {
         this.setState({nick: nick});
       }.bind(this));

@@ -12,12 +12,10 @@ init(_Transport, Req, _Opts, _Active) ->
   UUID = erlang:binary_to_list(BitUUID),
   case rooms_server:get_room_pid(UUID) of
     undefined ->
-      erlang:display([undefined, room, UUID]),
       {shutdown, Req2, []};
     Pid ->
       gproc:reg({p, l, UUID}),
       {ok, Req2, {Pid, empty}}
-      %%{reply, History, Req2, {Pid, empty}}
   end.
 
 stream(Message, Req, State) ->

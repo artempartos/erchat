@@ -1,9 +1,12 @@
 /** @jsx React.DOM */
 
 var NickBox = React.createClass({
+
   handleClick: function() {
     var nick = this.refs.nick.getDOMNode().value.trim()
-    this.props.onSetNickname(nick);
+    if (nick!="") {
+      this.props.onSetNickname(nick);
+    }
   },
   render: function() {
     var nick = ""
