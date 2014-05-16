@@ -8,14 +8,18 @@ $(document).ready(function() {
         return {uuid: uuid};
       },
       componentDidMount: function() {
-        var bullet = $.bullet('ws://localhost:8080/rooms/' + this.state.uuid, {});
+        var bullet = new BulletWrapper('ws://localhost:8080/rooms/' + this.state.uuid, {});
         console.log(this.state.uuid),
-        bullet.onopen = function() {
-          bullet.send('get history');
-        };
-        bullet.onmessage = function(){
-          console.log(e);
-        };
+        bullet.on('open', function() {
+          console.log("open");
+          bullet.send({event: 'get', data: 'history'});
+        });
+        bullet.on('history', function(data){
+          console.log(data);
+        });
+        bullet.on('heartbeat', function() {
+          console.log("heartbeat");
+        });
       },
       render: function() {
         return (
