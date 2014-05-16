@@ -9,14 +9,12 @@ var Chat = React.createClass({
       <div>
         <div class="well col-md-10">
             <MessageBox
-            history={[{content: "awrgaerg", nick: "Partos"}, {content: "sergesrg", nick: "Dima"}]}
-              // history={this.props.history}
+            history={this.props.history}
             />
         </div>
         <div class="well col-md-2">
             <UserBox
-              // users={this.props.users}
-              users={["asd", "etbteb", "adsfa"]}
+              users={this.props.users}
             />
         </div>
 

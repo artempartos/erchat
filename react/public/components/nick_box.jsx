@@ -1,6 +1,10 @@
 /** @jsx React.DOM */
 
 var NickBox = React.createClass({
+  handleClick: function() {
+    var nick = this.refs.nick.getDOMNode().value.trim()
+    this.props.onSetNickname(nick);
+  },
   render: function() {
     var nick = ""
 
@@ -9,9 +13,9 @@ var NickBox = React.createClass({
         <div id="nick_name">
           <h2> Please, set your nick </h2>
           <div class="input-group">
-            <input id="field" class="form-control" type="text"/>
+            <input id="field" class="form-control" type="text" ref='nick'/>
             <span class="input-group-btn">
-              <input id="setnick" class="btn btn-primary" type='button' value='Set nickname!'/>
+              <input id="setnick" class="btn btn-primary" type='button' onClick={this.handleClick} value='Set nickname!'/>
             </span>
           </div>
         </div>
@@ -20,7 +24,7 @@ var NickBox = React.createClass({
         nick = <h2> You are logged as {this.props.nick} </h2>
     }
 
-    return nick
+    return nick;
 
   }
 });

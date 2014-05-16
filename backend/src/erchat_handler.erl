@@ -32,10 +32,15 @@ stream(Message, Req, State) ->
 event({get, <<"history">>}, Req, {RoomPid, Nick}) ->
   History = room_server:get_history(RoomPid),
   {reply, History, Req, {RoomPid, Nick}};
+
+event({get, <<"users">>}, Req, {RoomPid, Nick}) ->
+  Users = room_server:get_users(RoomPid),
+  {reply, Users, Req, {RoomPid, Nick}};
   
 event({nickname, Nick}, Req, {RoomPid, empty}) ->
+  erlang:display(Nick),
   room_server:login_user(RoomPid, Nick),
-  {ok, Req, {RoomPid, Nick}};
+  {reply, {you_logged, Nick}, Req, {RoomPid, Nick}};
 
 event({message, _Message}, Req, State = {_RoomPid, empty}) ->
   {ok, Req, State};
@@ -50,5 +55,6 @@ info({Event, Data}, Req, State) ->
 info(_Info, Req, State) ->
   {ok, Req, State}.
 
-terminate(_Req, _TRef) ->
+terminate(_Req, {RoomPid, Nick}) ->
+  room_server:kick_user(RoomPid, Nick),
   ok.

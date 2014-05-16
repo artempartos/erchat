@@ -15,7 +15,8 @@
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
          terminate/2, code_change/3]).
 
--export([get_history/1, login_user/2, get_users_count/1, get_users/1]).
+-export([get_history/1, login_user/2, get_users_count/1, get_users/1,
+         kick_user/2]).
 %% ------------------------------------------------------------------
 %% API Function Definitions
 %% ------------------------------------------------------------------
@@ -33,6 +34,11 @@ init([UUID]) ->
   History = [],
   {ok, {UUID, Users, History}}.
 
+handle_call({kick, Nick}, _From, State) ->
+  {UUID, Users, History} = State,
+  NewUsers = lists:delete(Nick, Users),
+  broadcast({kick, Nick}, UUID),
+  {reply, ok, {UUID, NewUsers, History}};
 handle_call({get, users}, _From, State) ->
   {_UUID, Users, _History} = State,
   {reply, {users, Users}, State};
@@ -83,8 +89,10 @@ get_users(RoomPid) ->
 
 get_users_count(RoomPid) ->
   {users, Users} = get_users(RoomPid),
-  erlang:length(Users),
   length(Users).
+
+kick_user(RoomPid, Nick) ->
+  gen_server:call(RoomPid, {kick, Nick}).
 
 %% ------------------------------------------------------------------
 %% Internal Function Definitions
