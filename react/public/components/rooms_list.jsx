@@ -6,6 +6,5 @@ var RoomsList = React.createClass({
             return <RoomListItem room={room} />
         })
         return <div id="room_list"> {room_items} </div>
-
     }
 });
