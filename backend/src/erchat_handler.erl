@@ -11,7 +11,7 @@ init(_Transport, Req, _Opts, _Active) ->
   UUID = erlang:binary_to_list(BitUUID),
   case rooms_server:get_room_pid(UUID) of
     undefined ->
-      erlang:display(undefined),
+      erlang:display([undefined, room, UUID]),
       {shutdown, Req2, []};
     Pid ->
       gproc:reg({p, l, UUID}),
@@ -22,8 +22,6 @@ init(_Transport, Req, _Opts, _Active) ->
 stream(Message, Req, State) ->
   [{<<"event">>, BinEvent}, {<<"data">>, Data}] = jsx:decode(Message),
   Event = erlang:binary_to_atom(BinEvent, utf8),
-  erlang:display(Event),
-  erlang:display(erlang:binary_to_list(Data)),
   case event({Event, Data}, Req, State) of
     {reply, {ReplyEvent, ReplyData}, NewReq, NewState} ->
       JsonReply = jsx:encode([{event, ReplyEvent}, {data, ReplyData}]),
@@ -46,9 +44,11 @@ event({message, Message}, Req, State = {RoomPid, Nick}) ->
   {ok, Req, State}.
 
 
-info(Info, Req, State) ->
-  JsonInfo = jsx:encode(Info),
-  {reply, JsonInfo, Req, State}.
+info({Event, Data}, Req, State) ->
+  JsonReply = jsx:encode([{event, Event}, {data, Data}]),
+  {reply, JsonReply, Req, State};
+info(_Info, Req, State) ->
+  {ok, Req, State}.
 
 terminate(_Req, _TRef) ->
   ok.
