@@ -37,7 +37,7 @@ event({get, <<"history">>}, Req, {RoomPid, Nick}) ->
 event({get, <<"users">>}, Req, {RoomPid, Nick}) ->
   Users = room_server:get_users(RoomPid),
   {reply, Users, Req, {RoomPid, Nick}};
-  
+
 event({nickname, Nick}, Req, {RoomPid, empty}) ->
   room_server:login_user(RoomPid, Nick),
   {reply, {you_logged, Nick}, Req, {RoomPid, Nick}};
@@ -54,6 +54,9 @@ info({Event, Data}, Req, State) ->
   {reply, JsonReply, Req, State};
 info(_Info, Req, State) ->
   {ok, Req, State}.
+
+terminate(_Req, {RoomPid, empty}) ->
+  ok;
 
 terminate(_Req, {RoomPid, Nick}) ->
   room_server:kick_user(RoomPid, Nick),
