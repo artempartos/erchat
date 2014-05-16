@@ -17,11 +17,9 @@ erchat_test_() ->
 
 start() ->
   application:set_env(erchat, port, 8005),
-  erchat:start(),
-  application:start(erchat_app).
+  erchat:start().
 
 stop(_) ->
-  application:stop(erchat_app),
   erchat:stop().
 
 test_client_connected_and_login() ->
