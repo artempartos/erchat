@@ -12,7 +12,7 @@ $(document).ready(function() {
         console.log(this.state.uuid),
         bullet.on('open', function() {
           console.log("open");
-          bullet.send({event: 'get', data: 'history'});
+          bullet.send('get', 'history');
         });
         bullet.on('history', function(data){
           console.log(data);

@@ -22,7 +22,7 @@ BulletWrapper.prototype.on = function(event, callback) {
   }
 }
 
-BulletWrapper.prototype.send = function(data) {
-  var jsonData = JSON.stringify(data);
+BulletWrapper.prototype.send = function(event, data) {
+  var jsonData = JSON.stringify({event: event, data: data});
   this.bullet.send(jsonData);
 }
