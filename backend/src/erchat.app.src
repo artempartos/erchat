@@ -8,9 +8,12 @@
                   stdlib,
                   cowboy,
                   gproc,
+                  sync,
                   sasl,
-                  sync
+                  lager
                  ]},
   {mod, { erchat_app, []}},
-  {env, []}
+  {env, [
+        {port, 8080}
+  ]}
  ]}.

@@ -1,11 +1,14 @@
 /ebin
 .rebar/
 *.beam
-erl_crash.dump
-/.eunit/*
+/backend/erl_crash.dump
+/backend/.eunit/*
 */.idea/
 /deps/*
 /ebin/*
+/backend/deps/*
+/backend/ebin/*
+/react/node_modules/*
 /log/*
 /test/log/*
 *.beam
