@@ -19,31 +19,36 @@ init(_Transport, Req, _Opts, _Active) ->
       %%{reply, History, Req2, {Pid, empty}}
   end.
 
-stream(History, Req, State) ->
-  %% decode json
-  erlang:display(erlang:binary_to_list(History)),
-  %% stream after dispatch
-  %% encode
-  {reply, <<"">>, Req, State};
-%%FIXME change method
-stream({get, history}, Req, {RoomPid, empty}) ->
-  History = room_server:get_history(RoomPid);
+stream(Message, Req, State) ->
+  [{<<"event">>, BinEvent}, {<<"data">>, Data}] = jsx:decode(Message),
+  Event = erlang:binary_to_atom(BinEvent, utf8),
+  erlang:display(Event),
+  erlang:display(erlang:binary_to_list(Data)),
+  case event({Event, Data}, Req, State) of
+    {reply, {ReplyEvent, ReplyData}, NewReq, NewState} ->
+      JsonReply = jsx:encode([{event, ReplyEvent}, {data, ReplyData}]),
+      {reply, JsonReply, NewReq, NewState};
+    Value -> Value
+  end.
+
+event({get, <<"history">>}, Req, {RoomPid, Nick}) ->
+  History = room_server:get_history(RoomPid),
+  {reply, History, Req, {RoomPid, Nick}};
   
-stream({nickname, Nick}, Req, {RoomPid, empty}) ->
+event({nickname, Nick}, Req, {RoomPid, empty}) ->
   room_server:login_user(RoomPid, Nick),
   {ok, Req, {RoomPid, Nick}};
 
-stream({message, Message}, Req, State = {RoomPid, empty}) ->
+event({message, _Message}, Req, State = {_RoomPid, empty}) ->
   {ok, Req, State};
-stream({message, Message}, Req, State = {RoomPid, Nick}) ->
+event({message, Message}, Req, State = {RoomPid, Nick}) ->
   gen_server:cast(RoomPid, {new_message, Nick, Message}),
-  {ok, Req, State};
-
-stream(_Data, Req, State) ->
   {ok, Req, State}.
 
+
 info(Info, Req, State) ->
-  {reply, Info, Req, State}.
+  JsonInfo = jsx:encode(Info),
+  {reply, JsonInfo, Req, State}.
 
 terminate(_Req, _TRef) ->
   ok.
