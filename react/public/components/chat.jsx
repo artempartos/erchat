@@ -3,7 +3,7 @@
 var Chat = React.createClass({
   render: function() {
 
-    var disabled = this.props.nick==""
+    var disabled = this.props.nick=="";
 
     return (
       <div>
@@ -18,14 +18,11 @@ var Chat = React.createClass({
             />
         </div>
 
-        <div id="send_message">
-          <div class="input-group">
-            <input id="message" class="form-control" type="text"/>
-            <span class="input-group-btn">
-              <input id="send_message" class="btn btn-primary" type='button' disabled={disabled} value='Send message'/>
-            </span>
-          </div>
-        </div>
+        <MessageInput
+          onSendMessage={this.props.onSendMessage}
+          disabled={disabled}
+          
+        />
       </div>
     )
 

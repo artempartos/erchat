@@ -37,6 +37,13 @@ $(document).ready(function() {
         users.push(nick);
         this.setState({users: users, history: history})
       }.bind(this));
+      
+      bullet.on('message', function(message) {
+        var history = this.state.history;
+        history.push({nick: message.nick, content: message.content});
+        this.setState({history: history})
+      }.bind(this));
+      
       bullet.on('you_logged', function(nick) {
         this.setState({nick: nick});
       }.bind(this));
@@ -45,6 +52,9 @@ $(document).ready(function() {
     onSetNickname: function(nick) {
       console.log(nick);
       this.bullet.send('nickname', nick);
+    },
+    onSendMessage: function(message) {
+      this.bullet.send('message', message);
     },
     render: function() {
       return (
@@ -57,6 +67,7 @@ $(document).ready(function() {
             nick={this.state.nick}
             history={this.state.history}
             users={this.state.users}
+            onSendMessage={this.onSendMessage}
           />
           <br/>
         </div>
