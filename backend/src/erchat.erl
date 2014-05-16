@@ -5,7 +5,7 @@ start() ->
     {ok, _} = application:ensure_all_started(?MODULE).
 
 stop() ->
-  Apps = [erchat, gproc, ranch, cowboy],
+  Apps = [erchat, gproc, ranch, cowboy, cowlib],
   [application:stop(App) || App <- Apps],
   ok.
 
