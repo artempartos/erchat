@@ -57,4 +57,6 @@ info(_Info, Req, State) ->
 
 terminate(_Req, {RoomPid, Nick}) ->
   room_server:kick_user(RoomPid, Nick),
+  ok;
+terminate(_Req, State) ->
   ok.

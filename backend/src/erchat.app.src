@@ -12,5 +12,7 @@
                   sync
                  ]},
   {mod, { erchat_app, []}},
-  {env, []}
+  {env, [
+        {port, 8080}
+  ]}
  ]}.

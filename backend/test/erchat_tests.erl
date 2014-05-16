@@ -16,6 +16,7 @@ erchat_test_() ->
       fun test_get_rooms/0]}.
 
 start() ->
+  application:set_env(erchat, port, 8005),
   erchat:start(),
   application:start(erchat_app).
 

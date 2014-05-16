@@ -16,7 +16,8 @@ start(_StartType, _StartArgs) ->
       {"/rooms/[:uuid]", bullet_handler, [{handler, erchat_handler}]}
     ]}
   ]),
-  {ok, _} = cowboy:start_http(http, 100, [{port, 8080}], [
+  {ok, Port} = application:get_env(erchat, port),
+  {ok, _} = cowboy:start_http(http, 100, [{port, Port}], [
     {env, [{dispatch, Dispatch}]}
   ]),
   erchat_sup:start_link().
